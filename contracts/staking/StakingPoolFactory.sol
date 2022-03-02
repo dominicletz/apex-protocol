@@ -39,7 +39,7 @@ contract StakingPoolFactory is IStakingPoolFactory, Ownable, Initializable {
         require(_treasury != address(0), "cpf.initialize: INVALID_TREASURY");
         require(_apeXPerSec > 0, "cpf.initialize: INVALID_PER_SEC");
         require(_secSpanPerUpdate > 0, "cpf.initialize: INVALID_UPDATE_SPAN");
-        require(_initTimestamp > 0, "cpf.initialize: INVALID_INIT_TIMESTAMP");
+        require(_initTimestamp > block.timestamp, "cpf.initialize: INVALID_INIT_TIMESTAMP");
         require(_endTimestamp > _initTimestamp, "cpf.initialize: INVALID_END_TIMESTAMP");
         require(_lockTime > 0, "cpf.initialize: INVALID_LOCK_TIME");
 
@@ -200,21 +200,16 @@ contract StakingPoolFactory is IStakingPoolFactory, Ownable, Initializable {
     }
 
     function setEsApeX(address _esApeX) external override onlyOwner {
-        require(esApeX == address(0), "cpf.setEsApeX: INVALID_ADDRESS");
+        require(esApeX == address(0), "cpf.setEsApeX: ADDRESS_SET_ALREADY");
         esApeX = _esApeX;
 
         emit SetEsApeX(_esApeX);
     }
 
     function setStApeX(address _stApeX) external override onlyOwner {
-        require(stApeX == address(0), "cpf.setStApeX: INVALID_ADDRESS");
+        require(stApeX == address(0), "cpf.setStApeX: ADDRESS_SET_ALREADY");
         stApeX = _stApeX;
 
         emit SetStApeX(_stApeX);
-    }
-
-    //tocheck just for dev use
-    function setApeXPerSec(uint256 _apeXPerSec) external onlyOwner {
-        apeXPerSec = _apeXPerSec;
     }
 }

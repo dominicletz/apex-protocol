@@ -27,7 +27,7 @@ contract StakingPool is IStakingPool, Reentrant {
     ) {
         require(_factory != address(0), "cp: INVALID_FACTORY");
         require(_apeX != address(0), "cp: INVALID_APEX_TOKEN");
-        require(_initTimestamp > 0, "cp: INVALID_INIT_TIMESTAMP");
+        require(_initTimestamp > block.timestamp, "cp: INVALID_INIT_TIMESTAMP");
         require(_poolToken != address(0), "cp: INVALID_POOL_TOKEN");
 
         apeX = _apeX;
