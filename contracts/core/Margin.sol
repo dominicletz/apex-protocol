@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.2;
 
 import "./interfaces/IERC20.sol";
 import "./interfaces/IMarginFactory.sol";
@@ -61,7 +61,8 @@ contract Margin is IMargin, IVault, Reentrant {
         emit AddMargin(trader, depositAmount, traderPosition);
     }
 
-    //remove baseToken from trader's fundingFee+unrealizedPnl+margin, remain position need to meet the requirement of initMarginRatio
+    // remove baseToken from trader's fundingFee+unrealizedPnl+margin, the remaining
+    // position needs to meet the initMarginRatio requirement
     function removeMargin(
         address trader,
         address to,
@@ -553,7 +554,7 @@ contract Margin is IMargin, IVault, Reentrant {
         return (baseAmountFunding * (_getNewLatestCPF() - traderCPF[trader])).divU(1e18);
     }
 
-    function calDebtRatio1(address trader) external view override returns (uint256 debtRatio) {
+    function calDebtRatio(address trader) external view override returns (uint256 debtRatio) {
         Position memory position = traderPositionMap[trader];
 
         int256 baseAmountFunding;
@@ -682,7 +683,9 @@ contract Margin is IMargin, IVault, Reentrant {
             debtRatio = baseAmount == 0 ? 10000 : (baseSize.abs() * 10000) / baseAmount;
         } else {
             uint256 quoteAmount = quoteSize.abs();
-            //simulate to close long, markPriceAcc smaller, debt overvalue
+
+            //simulate closing long, markPriceAcc smaller, debt overvalue
+            
             uint256 baseAmount = IPriceOracle(IConfig(config).priceOracle()).getMarkPriceAcc(
                 amm,
                 IConfig(config).beta(),
@@ -771,9 +774,8 @@ contract Margin is IMargin, IVault, Reentrant {
             (quoteReserve * 10000 * marginAcc.abs()) /
             ((IConfig(config).initMarginRatio() * baseReserve) + (200 * marginAcc.abs() * IConfig(config).beta()));
     }
-
     //just for dev use
-    function calDebtRatio(int256 quoteSize, int256 baseSize)
+    function calDebtRatioDev(int256 quoteSize, int256 baseSize)
         external
         view
         returns (uint256 baseAmount, uint256 debtRatio)
